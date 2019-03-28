@@ -1,8 +1,10 @@
 import numpy as np
+from time import time
 import tensorflow as tf
 from keras import backend as K
+from keras.callbacks import TensorBoard
 from keras.datasets import mnist
-from keras.layers import Input, Dense, Lambda, Conv2D, Conv2DTranspose, MaxPooling2D, UpSampling2D, Reshape, Flatten
+from keras.layers import *
 from keras.layers.merge import concatenate as concat
 from keras.models import Model
 from keras.optimizers import Adam
@@ -13,11 +15,17 @@ class CVAE():
     def __init__(self, args):
         # hyperparamters
         self.args = args
-        self.n_dim = 2
-        self.filters = 8
-        self.epochs = 50
-        self.batch_size = 100
-    
+        self.logs_dir = args.logs_dir
+        self.n_dim = args.n_dim
+        self.dimension = args.dimension
+        self.image_size = args.image_size
+        self.num_layers = args.num_layers
+        self.filters = args.filters
+        self.learning_rate = args.learning_rate
+        self.decay_rate = args.decay_rate
+        self.epochs = args.epochs
+        self.batch_size = args.batch_size
+        
     # sample z
     def sample_z(self, args):
         mu, std = args
@@ -26,19 +34,26 @@ class CVAE():
 
     # loss function
     def vae_loss(self, y_true, y_pred):
-        recon = 28*28*K.binary_crossentropy(y_true, y_pred)
+        recon = self.image_size * self.image_size * K.binary_crossentropy(y_true, y_pred)
         kl = 0.5 * K.sum(K.exp(self.std) + K.square(self.mu) - 1. - self.std, axis=-1)
         return recon + kl
 
     # encoder
     def encode(self, X, label):
-        x_label = Dense(28 * 28)(label)
-        x_label = Reshape((28, 28, 1))(x_label)
+        x_label = Dense(self.image_size * self.image_size)(label)
+        if self.dimension == 2:
+            x_label = Reshape((self.image_size, self.image_size, 1))(x_label)
+        else:
+            x_label = Reshape((self.image_size, self.image_size, 3))(x_label)
         x = concat([X, x_label])
 
         for i in range(2):
-            x = Conv2D(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
-            x = MaxPooling2D((2, 2), padding='same')(x)
+            if self.dimension == 2:
+                x = Conv2D(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
+                x = MaxPooling2D((2, 2), padding='same')(x)
+            else:
+                x = Conv3D(filters=self.filters, kernel_size=(3,3,3), activation='relu', padding='same')(x)
+                x = MaxPooling3D((2, 2, 2), padding='same')(x)
             self.filters *= 2
 
         shape = K.int_shape(x)
@@ -61,11 +76,17 @@ class CVAE():
         x = Reshape((shape[1], shape[2], shape[3]))(x)
 
         for i in range(2):
-            x = Conv2DTranspose(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
-            x = UpSampling2D((2, 2))(x)
+            if self.dimension == 2:
+                x = Conv2DTranspose(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
+                x = UpSampling2D((2, 2))(x)
+            else:
+                x = Conv3DTranspose(filters=self.filters, kernel_size=(3,3,3), activation='relu', padding='same')(x)
+                x = UpSampling3D((2, 2, 2), padding='same')(x)
             self.filters //= 2
-
-        outputs = Conv2DTranspose(filters=1, kernel_size=(3,3), activation='sigmoid', padding='same')(x)
+        if self.dimension == 2:
+            outputs = Conv2DTranspose(filters=1, kernel_size=(3,3), activation='sigmoid', padding='same')(x)
+        else:
+            outputs = Conv3DTranspose(filters=1, kernel_size=(3,3,3), activation='sigmoid', padding='same')(x)
         decoder = Model([z_inputs, label], outputs, name='decoder')
 
         return decoder
@@ -74,7 +95,7 @@ class CVAE():
     def forward(self, X_train, X_test, y_train, y_test):
         X_shape = X_train.shape[1]
         y_shape = y_train.shape[1]
-        X = Input(shape=(28, 28, 1), name='input')
+        X = Input(shape=(self.image_size, self.image_size, 1), name='input')
         label = Input(shape=(y_shape,), name='label')
         
         encoder, shape = self.encode(X, label)
@@ -87,10 +108,11 @@ class CVAE():
         z_output = encoder([X, label])[2]
         outputs = decoder([z_output, label])
         cvae = Model([X, label], outputs, name='cvae')
-        cvae.compile(optimizer=Adam(lr=0.0005), loss=self.vae_loss)
+        cvae.compile(optimizer=Adam(lr=self.learning_rate, decay=self.decay_rate, epsilon=1e-08), loss=self.vae_loss)
         cvae.summary()
+        tensorboard = TensorBoard(log_dir="{}/{}".format(self.logs_dir,time()))
         cvae_hist = cvae.fit([X_train, y_train], X_train, verbose=1, batch_size=self.batch_size, epochs=self.epochs,
-                     validation_data=([X_test, y_test], X_test))
+                     validation_data=([X_test, y_test], X_test), callbacks=[tensorboard])
         
         return cvae, cvae_hist
 
