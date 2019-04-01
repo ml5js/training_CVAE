@@ -41,19 +41,12 @@ class CVAE():
     # encoder
     def encode(self, X, label):
         x_label = Dense(self.image_size * self.image_size)(label)
-        if self.dimension == 2:
-            x_label = Reshape((self.image_size, self.image_size, 1))(x_label)
-        else:
-            x_label = Reshape((self.image_size, self.image_size, 3))(x_label)
+        x_label = Reshape((self.image_size, self.image_size, 1))(x_label)
         x = concat([X, x_label])
 
-        for i in range(2):
-            if self.dimension == 2:
-                x = Conv2D(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
-                x = MaxPooling2D((2, 2), padding='same')(x)
-            else:
-                x = Conv3D(filters=self.filters, kernel_size=(3,3,3), activation='relu', padding='same')(x)
-                x = MaxPooling3D((2, 2, 2), padding='same')(x)
+        for i in range(self.num_layers):
+            x = Conv2D(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
+            x = MaxPooling2D((2, 2), padding='same')(x)
             self.filters *= 2
 
         shape = K.int_shape(x)
@@ -75,18 +68,12 @@ class CVAE():
         x = Dense(shape[1]*shape[2]*shape[3], activation='relu')(x)
         x = Reshape((shape[1], shape[2], shape[3]))(x)
 
-        for i in range(2):
-            if self.dimension == 2:
-                x = Conv2DTranspose(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
-                x = UpSampling2D((2, 2))(x)
-            else:
-                x = Conv3DTranspose(filters=self.filters, kernel_size=(3,3,3), activation='relu', padding='same')(x)
-                x = UpSampling3D((2, 2, 2), padding='same')(x)
+        for i in range(self.num_layers):
+            x = Conv2DTranspose(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
+            x = UpSampling2D((2, 2))(x)
             self.filters //= 2
-        if self.dimension == 2:
-            outputs = Conv2DTranspose(filters=1, kernel_size=(3,3), activation='sigmoid', padding='same')(x)
-        else:
-            outputs = Conv3DTranspose(filters=1, kernel_size=(3,3,3), activation='sigmoid', padding='same')(x)
+        outputs = Conv2DTranspose(filters=1, kernel_size=(3,3), activation='sigmoid', padding='same')(x)
+
         decoder = Model([z_inputs, label], outputs, name='decoder')
 
         return decoder
