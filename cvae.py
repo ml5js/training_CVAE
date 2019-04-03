@@ -45,7 +45,7 @@ class CVAE():
         x_label = Reshape((self.image_size, self.image_size, 1))(x_label)
         x = concat([X, x_label])
 
-        for i in range(2):
+        for i in range(self.num_layers):
             x = Conv2D(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
             x = MaxPooling2D((2, 2), padding='same')(x)
             self.filters *= 2
@@ -69,7 +69,7 @@ class CVAE():
         x = Dense(shape[1]*shape[2]*shape[3], activation='relu')(x)
         x = Reshape((shape[1], shape[2], shape[3]))(x)
 
-        for i in range(2):
+        for i in range(self.num_layers):
             x = Conv2DTranspose(filters=self.filters, kernel_size=(3,3), activation='relu', padding='same')(x)
             x = UpSampling2D((2, 2))(x)
             self.filters //= 2
