@@ -18,8 +18,6 @@ def main():
                         help="The directory to store checkpointed models")
     parser.add_argument('--n_dim', type=int, default=16,
                         help="The dimension of latent z")
-    parser.add_argument('--dimension', type=int, default=2,
-                        help="The dimension of input image: 2D or 3D")
     parser.add_argument('--image_size', type=int, default=28,
                         help="The input image size, which should be a square image")
     parser.add_argument('--num_layers', type=int, default=2,
@@ -34,13 +32,15 @@ def main():
                         help="The number of epochs when training")
     parser.add_argument('--batch_size', type=int, default=100,
                         help="The number of batch_size when training")
+    parser.add_argument('--image_depth', type=int, default=1,
+                        help="The number of channels in image")
     
     args = parser.parse_args()
 
     (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
 
-    X_train = np.reshape(X_train, [-1, 28, 28, 1])
-    X_test = np.reshape(X_test, [-1, 28, 28, 1])
+    X_train = np.reshape(X_train, [-1, args.image_size, args.image_size, args.image_depth])
+    X_test = np.reshape(X_test, [-1, args.image_size, args.image_size, args.image_depth])
     X_train = X_train.astype('float32') / 255.
     X_test = X_test.astype('float32') / 255.
 
