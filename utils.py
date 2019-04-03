@@ -8,19 +8,19 @@ def get_files(path):
     
     features = []
     labels = []
+    labels_value = []
     count = 0
+
+    #TODO: Load Img
     for d in dirs:
-        files = [f for f in os.listdir(d)]
+        files = [f for f in os.listdir(d)] #load np
         for f in files:
-            data = np.load(d+'/'+f)
-            for i in range(data.shape[0]):
-                img = data[i].reshape(28, 28, 1)
-                img = img / 255.0
-                features.append(img)
-                labels.append(count)
+            data = np.load(d+'/'+f)                
+            data = data.reshape([1, 28, 28, 1])
+            features.append(data)
+        labels_value.append(d)
+        labels.append(count)
         count += 1
-        if count == 1:
-            break
     
     return features, labels
 
