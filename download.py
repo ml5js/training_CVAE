@@ -2,12 +2,12 @@ import urllib.request
 import os
 
 with open("./data/categories.txt", 'r') as f:
-    classes = f.readlines()
+  classes = f.readlines()
 
 classes = [c.replace('\n','').replace(' ','_') for c in classes]
 
+# function to retrieve quick_draw dataset
 def download():
-  
   base = 'https://storage.googleapis.com/quickdraw_dataset/full/numpy_bitmap/'
   for c in classes:
     cls_url = c.replace('_', '%20')

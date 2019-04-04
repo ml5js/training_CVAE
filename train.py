@@ -37,6 +37,10 @@ def main():
     
     args = parser.parse_args()
 
+    assert (args.image_size / (2 ** args.num_layers)).is_integer() , \
+        "Make sure that image_size % (2 ** num_layers) == 0 or the encoder and decoder will have different convoluted features!"
+    
+
     # (train_features, train_labels), (validataion_features, validataion_labels) = get_files('data')
     # training, validation = get_data(train_features, train_labels, validataion_features, validataion_labels)
     (X_train, Y_train), (X_test, Y_test) = get_files('data', args)
