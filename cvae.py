@@ -17,7 +17,6 @@ class CVAE():
         self.args = args
         self.logs_dir = args.logs_dir
         self.n_dim = args.n_dim
-        self.dimension = args.dimension
         self.image_size = args.image_size
         self.num_layers = args.num_layers
         self.filters = args.filters

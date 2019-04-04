@@ -10,7 +10,7 @@ def get_files(path):
     validation_features = None
     training_labels = None
     validation_labels = None
-    labels_value = None
+    labels_value = []
     count = 1
 
     #TODO: Load Img
@@ -34,10 +34,10 @@ def get_files(path):
                 training_labels = np.concatenate([training_labels, new_labels], axis=0)
 
             # concatenate arrays to get the validation data
-            if validataion_features is None:
-                validataion_features = np.copy(data[length-(length//10):,:,:,:])
+            if validation_features is None:
+                validation_features = np.copy(data[length-(length//10):,:,:,:])
             else:
-                validataion_features = np.concatenate([validataion_features ,data[length-(length//10):,:,:,:]), axis=0)
+                validation_features = np.concatenate((validation_features, data[length-(length//10):,:,:,:]), axis=0)
 
             # get validation data
             if validation_labels is None:
@@ -56,6 +56,7 @@ def get_files(path):
 # create training data
 def get_data(training_features, training_labels, validation_features, validation_labels):
     # get training data
+    print(training_features.shape, training_labels.shape)
     train_imgs = tf.constant(training_features)
     train_labels = tf.constant(training_labels)
 
@@ -68,12 +69,12 @@ def get_data(training_features, training_labels, validation_features, validation
 
     return training_data, validation_data
 
-(train_features, train_labels), (validataion_features, validataion_labels) = get_files('quickdraw_data')
-image_label_ds = get_data(train_features, train_labels, validataion_features, validataion_labels)
+# (train_features, train_labels), (validataion_features, validataion_labels) = get_files('quickdraw_data')
+# image_label_ds = get_data(train_features, train_labels, validataion_features, validataion_labels)
 
 
-print('image shape: ', image_label_ds.output_shapes[0])
-print('label shape: ', image_label_ds.output_shapes[1])
-print('types: ', image_label_ds.output_types)
-print()
-print(image_label_ds)
+# print('image shape: ', image_label_ds.output_shapes[0])
+# print('label shape: ', image_label_ds.output_shapes[1])
+# print('types: ', image_label_ds.output_types)
+# print()
+# print(image_label_ds)

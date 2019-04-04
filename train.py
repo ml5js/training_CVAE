@@ -3,7 +3,7 @@ import numpy as np
 from keras.datasets import mnist
 from keras.utils import to_categorical
 from cvae import CVAE
-
+from utils import *
 
 
 def main():
@@ -37,8 +37,12 @@ def main():
     
     args = parser.parse_args()
 
-    (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
+    # (train_features, train_labels), (validataion_features, validataion_labels) = get_files('data')
+    # training, validation = get_data(train_features, train_labels, validataion_features, validataion_labels)
+    (X_train, Y_train), (X_test, Y_test) = get_files('data')
 
+    # (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
+    print(X_train.shape)
     X_train = np.reshape(X_train, [-1, args.image_size, args.image_size, args.image_depth])
     X_test = np.reshape(X_test, [-1, args.image_size, args.image_size, args.image_depth])
     X_train = X_train.astype('float32') / 255.
