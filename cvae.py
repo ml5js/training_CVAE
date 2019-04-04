@@ -30,7 +30,7 @@ class CVAE():
     def sample_z(self, args):
         mu, std = args
         eps = K.random_normal(shape=(self.batch_size, self.n_dim), mean=0., stddev=1.)
-        return mu + K.exp(std / 2) * eps
+        return mu + K.exp(0.5 * std) * eps
 
     # loss function
     def vae_loss(self, y_true, y_pred):

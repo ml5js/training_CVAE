@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 
 # get all the files and its label
-def get_files(path):
+def get_files(path, args):
     dirs = [x[0] for x in os.walk(path)][1:]
     
     training_features = None
@@ -18,7 +18,7 @@ def get_files(path):
         files = [f for f in os.listdir(d)] #load np
         for f in files:
             data = np.load(d+'/'+f)                
-            data = data.reshape([-1, 28, 28, 1])
+            data = data.reshape([-1, args.image_size, args.image_size, args.image_depth])
             length = data.shape[0]
             # concatenate arrays to get the training data
             if training_features is None:
@@ -48,6 +48,23 @@ def get_files(path):
         
         labels_value.append(d)
         count += 1
+    
+    # Pad the data to fit the batch size
+    # For features
+    training_residual_shape = training_features.shape[0] % args.batch_size
+    validation_residual_shape = validation_features.shape[0] % args.batch_size
+    if training_residual_shape != 0:
+        padding = np.zeros((training_residual_shape, args.image_size, args.image_size, args.image_depth))
+        training_features = np.concatenate([training_features, padding], axis=0)
+        label_padding = np.zeros((training_residual_shape, 1))
+        training_labels = np.concatenate([training_labels, label_padding], axis=0)
+    
+    # For labels
+    if validation_residual_shape != 0:
+        padding = np.zeros((validation_residual_shape, args.image_size, args.image_size, args.image_depth))
+        validation_features = np.concatenate([validation_features, padding], axis=0)
+        label_padding = np.zeros((validation_residual_shape, 1))
+        validation_labels = np.concatenate([validation_labels, label_padding], axis=0)
     
     
     return (training_features.astype('uint8'), training_labels.astype('uint8')), \

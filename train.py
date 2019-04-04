@@ -30,7 +30,7 @@ def main():
                         help="The decay rate of the Adam optimizer")
     parser.add_argument('--epochs', type=int, default=30,
                         help="The number of epochs when training")
-    parser.add_argument('--batch_size', type=int, default=100,
+    parser.add_argument('--batch_size', type=int, default=128,
                         help="The number of batch_size when training")
     parser.add_argument('--image_depth', type=int, default=1,
                         help="The number of channels in image")
@@ -39,7 +39,7 @@ def main():
 
     # (train_features, train_labels), (validataion_features, validataion_labels) = get_files('data')
     # training, validation = get_data(train_features, train_labels, validataion_features, validataion_labels)
-    (X_train, Y_train), (X_test, Y_test) = get_files('data')
+    (X_train, Y_train), (X_test, Y_test) = get_files('data', args)
 
     # (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
     print(X_train.shape)
