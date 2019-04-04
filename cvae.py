@@ -100,7 +100,7 @@ class CVAE():
         cvae.summary()
         tensorboard = TensorBoard(log_dir="{}/{}".format(self.logs_dir,time()))
         cvae_hist = cvae.fit([X_train, y_train], X_train, verbose=1, batch_size=self.batch_size, epochs=self.epochs,
-                     validation_data=([X_test, y_test], X_test), callbacks=[tensorboard])
+                     validation_data=([X_test, y_test], X_test), callbacks=[tensorboard], shuffle=True)
         
         return cvae, cvae_hist
 

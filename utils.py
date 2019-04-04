@@ -6,12 +6,12 @@ import numpy as np
 def get_files(path):
     dirs = [x[0] for x in os.walk(path)][1:]
     
-    training_features = []
-    validation_features = []
-    training_labels = []
-    validation_labels = []
-    labels_value = []
-    count = 0
+    training_features = None
+    validation_features = None
+    training_labels = None
+    validation_labels = None
+    labels_value = None
+    count = 1
 
     #TODO: Load Img
     for d in dirs:
@@ -19,15 +19,39 @@ def get_files(path):
         for f in files:
             data = np.load(d+'/'+f)                
             data = data.reshape([-1, 28, 28, 1])
-            length = data.shape(0)
-            training_features.append(data[:length-(length//10),:,:,:])
-            validataion_features.append(data[length-(length//10):,:,:,:])
-        training_labels.append(count)
-        validation_labels.append(count)
+            length = data.shape[0]
+            # concatenate arrays to get the training data
+            if training_features is None:
+                training_features = np.copy(data[:length-(length//10),:,:,:])
+            else:
+                training_features = np.concatenate([training_features, data[:length-(length//10),:,:,:]], axis=0)
+            
+            # get validation data
+            if training_labels is None:
+                training_labels = count * np.ones((length-(length//10),1))
+            else:
+                new_labels = count * np.ones((length-(length//10),1))
+                training_labels = np.concatenate([training_labels, new_labels], axis=0)
+
+            # concatenate arrays to get the validation data
+            if validataion_features is None:
+                validataion_features = np.copy(data[length-(length//10):,:,:,:])
+            else:
+                validataion_features = np.concatenate([validataion_features ,data[length-(length//10):,:,:,:]), axis=0)
+
+            # get validation data
+            if validation_labels is None:
+                validation_labels = count * np.ones(((length//10),1))
+            else:
+                new_labels = count * np.ones(((length//10),1))
+                validation_labels = np.concatenate([validation_labels, new_labels], axis=0)
+        
         labels_value.append(d)
         count += 1
     
-    return (training_features, training_labels), (validation_features, validation_labels)
+    
+    return (training_features.astype('uint8'), training_labels.astype('uint8')), \
+        (validation_features.astype('uint8'), validation_labels.astype('uint8'))
 
 # create training data
 def get_data(training_features, training_labels, validation_features, validation_labels):
