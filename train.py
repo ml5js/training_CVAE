@@ -63,7 +63,7 @@ def main():
     cvae = CVAE(args)
     cvae.forward(X_train, X_test, y_train, y_test)
     os.system('tensorflowjs_converter --input_format=keras ' + args.save_model + '.h5 ' + args.save_model)
-    manifest = {"model": args.save_model, "labels": labels}
+    manifest = {"model": args.save_model+"/model.json", "labels": labels}
     with open("manifest.json", 'w') as f:
         json.dump(manifest, f)
 
