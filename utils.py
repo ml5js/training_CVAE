@@ -46,7 +46,7 @@ def get_files(path, args):
                 new_labels = count * np.ones(((length//10),1))
                 validation_labels = np.concatenate([validation_labels, new_labels], axis=0)
         
-        labels_value.append(d)
+        labels_value.append(d.split("\\")[-1])
         count += 1
     
     # Pad the data to fit the batch size
@@ -70,7 +70,7 @@ def get_files(path, args):
     
     
     return (training_features.astype('uint8'), training_labels.astype('uint8')), \
-        (validation_features.astype('uint8'), validation_labels.astype('uint8'))
+        (validation_features.astype('uint8'), validation_labels.astype('uint8')), labels_value
 
 # create training data
 def get_data(training_features, training_labels, validation_features, validation_labels):

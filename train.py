@@ -4,7 +4,8 @@ from keras.datasets import mnist
 from keras.utils import to_categorical
 from cvae import CVAE
 from utils import *
-
+import os
+import json
 
 def main():
     parser = argparse.ArgumentParser()
@@ -43,7 +44,7 @@ def main():
 
     # (train_features, train_labels), (validataion_features, validataion_labels) = get_files('data')
     # training, validation = get_data(train_features, train_labels, validataion_features, validataion_labels)
-    (X_train, Y_train), (X_test, Y_test) = get_files('data', args)
+    (X_train, Y_train), (X_test, Y_test), labels = get_files('data', args)
 
     # (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
     print(X_train.shape)
@@ -61,7 +62,10 @@ def main():
 
     cvae = CVAE(args)
     cvae.forward(X_train, X_test, y_train, y_test)
-
+    os.system('tensorflowjs_converter --input_format=keras ' + args.save_model + '.h5 ' + args.save_model)
+    manifest = {"model": args.save_model, "labels": labels}
+    with open("manifest.json", 'w') as f:
+        json.dump(manifest, f)
 
 if __name__ == "__main__":
     main()
