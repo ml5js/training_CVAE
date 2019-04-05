@@ -1,5 +1,7 @@
 import urllib.request
 import os
+ 
+urllib.request.urlretrieve("https://raw.githubusercontent.com/googlecreativelab/quickdraw-dataset/master/categories.txt", filename="data/categories.txt")
 
 with open("./data/categories.txt", 'r') as f:
   classes = f.readlines()
