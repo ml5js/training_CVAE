@@ -74,16 +74,25 @@ def get_files(path, args):
     validation_residual_shape = validation_features.shape[0] % args.batch_size
     if training_residual_shape != 0:
         padding = np.zeros((args.batch_size - training_residual_shape, args.image_size, args.image_size, args.image_depth))
-        training_features = np.concatenate([training_features, padding], axis=0)
+        new_features = np.concatenate([training_features, padding], axis=0)
+        training_features = new_features
+        del new_features
+        
         label_padding = np.zeros((args.batch_size - training_residual_shape, 1))
-        training_labels = np.concatenate([training_labels, label_padding], axis=0)
+        new_labels = np.concatenate([training_labels, label_padding], axis=0)
+        training_labels = new_labels
+        del new_labels
     
     # For labels
     if validation_residual_shape != 0:
         padding = np.zeros((args.batch_size - validation_residual_shape, args.image_size, args.image_size, args.image_depth))
-        validation_features = np.concatenate([validation_features, padding], axis=0)
+        new_features = np.concatenate([validation_features, padding], axis=0)
+        validation_features = new_features
+        del new_features
         label_padding = np.zeros((args.batch_size - validation_residual_shape, 1))
-        validation_labels = np.concatenate([validation_labels, label_padding], axis=0)
+        new_labels = np.concatenate([validation_labels, label_padding], axis=0)
+        validation_labels = new_labels
+        del new_labels
     
     
     return (training_features.astype('uint8'), training_labels.astype('uint8')), \
