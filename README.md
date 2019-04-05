@@ -65,3 +65,9 @@ bash run.sh
 ### 4) Use it
 
 
+Once the model is ready, you will get one ``manifest.json`` file and a folder named ``model`` or your custom name that contains your model. Be sure to move both of them into your ml5 sketch folder and run the below command:
+```js
+const cvae = new ml5.CVAE('./manifest.json');
+```
+That's it!
+Have fun with CVAE in ml5!
