@@ -67,17 +67,16 @@ def get_files(path, args):
         labels_value.append(d)
         count += 1
     
+    # TODO: Fix memory leak
     # Pad the data to fit the batch size
     # For features
     training_residual_shape = training_features.shape[0] % args.batch_size
     validation_residual_shape = validation_features.shape[0] % args.batch_size
     if training_residual_shape != 0:
-        print(args.batch_size)
         padding = np.zeros((args.batch_size - training_residual_shape, args.image_size, args.image_size, args.image_depth))
         training_features = np.concatenate([training_features, padding], axis=0)
         label_padding = np.zeros((args.batch_size - training_residual_shape, 1))
         training_labels = np.concatenate([training_labels, label_padding], axis=0)
-        print(training_features.shape[0])
     
     # For labels
     if validation_residual_shape != 0:
@@ -93,7 +92,6 @@ def get_files(path, args):
 # create training data
 def get_data(training_features, training_labels, validation_features, validation_labels):
     # get training data
-    print(training_features.shape, training_labels.shape)
     train_imgs = tf.constant(training_features)
     train_labels = tf.constant(training_labels)
 
