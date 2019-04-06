@@ -19,24 +19,26 @@ This CVAE model can generate new image based on the training data and you could 
 
 When you have your image data and labels of each of them, make sure put them in a folder in the `root` of this project like this:
 ```
----data_folder
-   |__ car
-   |   |__ car1.png
-   |   |__ car2.png
-   |   |__ ...
-   |
-   |__ plane
-   |   |__ plane1.png
-   |   |__ plane2.png
-   |   |__ ...
-   |__ ...
-   |__ ...
+--- data_folder
+      |__ car
+      |   |__ car1.png
+      |   |__ car2.png
+      |   |__ ...
+      |
+      |__ airplane
+      |   |__ airplane1.png
+      |   |__ airplane2.png
+      |   |__ ...
+      |__ ...
+      |__ ...
 ```
-The type of file can be either numpy array like `.npy` or image files like `.png`, `.jpg` or `.jpeg`.
+The type of file can be either numpy array like `.npy` or image files like `.png`, `.jpg` or `.jpeg`. 
+
 If you do not have a dataset on hand, you could use the `download.py` to download the [quick draw dataset](https://quickdraw.withgoogle.com/) provided by Google. Please make sure make a `data` folder before you run:
 ```bash
 python download.py
 ```
+
 ### 3) Train
 
 Run the training script with default settings:
@@ -61,6 +63,7 @@ Or you could simply run the bash script `run.sh`:
 ```bash
 bash run.sh
 ```
+**Important thing to notice: when fit your data into the model, the input numpy array or image should to be square and the image_size hyperparameter should be compatible or errors will occur! If you don't have square image or data, you have to shave it into square by yourself.**
 
 ### 4) Use it
 
