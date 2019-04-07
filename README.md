@@ -19,18 +19,18 @@ This CVAE model can generate new image based on the training data and you could 
 
 When you have your image data and labels of each of them, make sure put them in a folder in the `root` of this project like this:
 ```
---- data_folder
-      |__ car
-      |   |__ car1.png
-      |   |__ car2.png
-      |   |__ ...
+── data_folder
+      ├── car
+      |   ├── car1.png
+      |   ├── car2.png
+      |   └── ...
       |
-      |__ airplane
-      |   |__ airplane1.png
-      |   |__ airplane2.png
-      |   |__ ...
-      |__ ...
-      |__ ...
+      ├── airplane
+      |   ├── airplane1.png
+      |   ├── airplane2.png
+      |   └── ...
+      ├── ...
+      └── ...
 ```
 The type of file can be either numpy array like `.npy` or image files like `.png`, `.jpg` or `.jpeg`. 
 
