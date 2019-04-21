@@ -42,23 +42,36 @@ def main():
         "Make sure that image_size % (2 ** num_layers) == 0 or the encoder and decoder will have different convoluted features!"
     
 
-    # (train_features, train_labels), (validataion_features, validataion_labels) = get_files('data')
-    # training, validation = get_data(train_features, train_labels, validataion_features, validataion_labels)
-    (X_train, Y_train), (X_test, Y_test), labels = get_files('data', args)
+    # (X_train, Y_train), (X_test, Y_test), labels = get_files('data', args)
 
-    # (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
-    print(X_train.shape)
-    X_train = np.reshape(X_train, [-1, args.image_size, args.image_size, args.image_depth])
-    X_test = np.reshape(X_test, [-1, args.image_size, args.image_size, args.image_depth])
-    X_train = X_train.astype('float32') / 255.
-    X_test = X_test.astype('float32') / 255.
+    # X_train = np.reshape(X_train, [-1, args.image_size, args.image_size, args.image_depth])
+    # X_test = np.reshape(X_test, [-1, args.image_size, args.image_size, args.image_depth])
+    # X_train = X_train.astype('float32') / 255.
+    # X_test = X_test.astype('float32') / 255.
 
-    y_train = to_categorical(Y_train)
-    y_test = to_categorical(Y_test)
+    # y_train = to_categorical(Y_train)
+    # y_test = to_categorical(Y_test)
 
-    X_shape = X_train.shape[1]
-    y_shape = y_train.shape[1]
+    # X_shape = X_train.shape[1]
+    # y_shape = y_train.shape[1]
 
+
+    # parse image to npy files
+    parse_imgs('data')
+
+    # Datasets
+    partition, labels, count = get_data('data')
+
+    # Parameters
+    params = {'dim': (args.image_size,args.image_size,args.image_depth),
+            'batch_size': args.batch_size,
+            'n_classes': count,
+            'n_channels': 1,
+            'shuffle': True}
+
+    # Generators
+    training_generator = DataGenerator(partition['train'], labels, **params)
+    validation_generator = DataGenerator(partition['validation'], labels, **params)
 
     cvae = CVAE(args)
     cvae.forward(X_train, X_test, y_train, y_test)

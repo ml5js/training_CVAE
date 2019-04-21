@@ -32,11 +32,13 @@ class CVAE():
         eps = K.random_normal(shape=(self.batch_size, self.n_dim), mean=0., stddev=1.)
         return mu + K.exp(0.5 * std) * eps
 
+
     # loss function
     def vae_loss(self, y_true, y_pred):
         recon = self.image_size * self.image_size * K.binary_crossentropy(y_true, y_pred)
         kl = 0.5 * K.sum(K.exp(self.std) + K.square(self.mu) - 1. - self.std, axis=-1)
         return recon + kl
+
 
     # encoder
     def encode(self, X, label):
@@ -77,6 +79,7 @@ class CVAE():
         decoder = Model([z_inputs, label], outputs, name='decoder')
 
         return decoder
+
 
     # forward
     def forward(self, X_train, X_test, y_train, y_test):
