@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
-from keras.datasets import mnist
-from keras.utils import to_categorical
+from tensorflow.python.keras.datasets import mnist
+from tensorflow.python.keras.utils import to_categorical
 from cvae import CVAE
 from utils import *
 import os

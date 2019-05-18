@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.misc import imsave
 import matplotlib.pyplot as plt
-from keras.models import load_model
+from tensorflow.python.keras.models import load_model
 
 decoder = load_model('decoder.h5')
 

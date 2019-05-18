@@ -1,13 +1,13 @@
 import numpy as np
 from time import time
 import tensorflow as tf
-from keras import backend as K
-from keras.callbacks import TensorBoard
-from keras.datasets import mnist
-from keras.layers import *
-from keras.layers.merge import concatenate as concat
-from keras.models import Model
-from keras.optimizers import Adam
+from tensorflow.python.keras import backend as K
+from tensorflow.python.keras.callbacks import TensorBoard
+from tensorflow.python.keras.datasets import mnist
+from tensorflow.python.keras.layers import *
+from tensorflow.python.keras.layers.merge import concatenate as concat
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.optimizers import Adam
 
 
 # class for CVAE
